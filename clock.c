@@ -37,6 +37,7 @@ static void usage(char *progname) {
   printf("    %s [--no-totally-unnecessary-brightness-flicker]\n\n", progname);
   printf("  -s, --no-totally-unnecessary-brightness-flicker  Disable brightness flicker\n");
   printf("                                                   when updating the time.\n");
+  printf("  -x                                               Alternate font style.\n");
   printf("  --help                                           Display this screen.\n");
   printf("\n");
   exit(EXIT_SUCCESS);
@@ -45,6 +46,7 @@ static void usage(char *progname) {
 int main(int argc, char *argv[]) {
   // parse arguments
   int opt_flicker = 1;
+  int font_style = 0;
   int ret;
 
   {
@@ -57,7 +59,7 @@ int main(int argc, char *argv[]) {
 
     while (1) {
       int opt_index=0;
-      int c = getopt_long(argc, argv, "s", long_options, &opt_index);
+      int c = getopt_long(argc, argv, "xs", long_options, &opt_index);
 
       if (c == -1)
         break;
@@ -71,6 +73,9 @@ int main(int argc, char *argv[]) {
         case 's':
           opt_flicker=0;
           break;
+	case 'x':
+	  font_style=1;
+	  break;
         case '?':
           exit(EXIT_FAILURE);
         default:
@@ -119,7 +124,7 @@ int main(int argc, char *argv[]) {
     for (i=0; i<5; ++i) {
       if (opt_flicker && oldtime_int!=curtime_int)
         ldisplay_setBrightness(LDISPLAY_BRIGHT);
-      ret = ldisplay_showTime(curtime_int, 0);
+      ret = ldisplay_showTime(curtime_int, font_style);
       if (ret) {
         fprintf(stderr, "\033[1;31mDevice failed to respond: %d\033[0m\n", ret);
         ldisplay_cleanup();
@@ -130,7 +135,7 @@ int main(int argc, char *argv[]) {
         oldtime_int = curtime_int;
         ldisplay_setBrightness(LDISPLAY_DIM);
       }
-      ret = ldisplay_showTime(curtime_int, 0);
+      ret = ldisplay_showTime(curtime_int, font_style);
       if (ret) {
         fprintf(stderr, "\033[1;31mDevice failed to respond: %d\033[0m\n", ret);
         ldisplay_cleanup();
