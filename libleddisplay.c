@@ -66,7 +66,7 @@ static inline uint32_t _swapbits( uint32_t v )
   return ( ( v & h_mask_4 ) >> 4 ) | ( ( v & l_mask_4 ) << 4 );
 }
 
-static inline void _overlay(const uint32_t *foreground, uint32_t background[7], char xOff, char yOff) {
+static inline void _overlay(const uint32_t *foreground, uint32_t background[7], int32_t xOff, int32_t yOff) {
   int i;
   // index bounds checking
   if (yOff<-6 || yOff>6 || xOff<-20 || xOff>20) return;
@@ -216,14 +216,14 @@ void ldisplay_setBrightness(unsigned char brightness) {
   _brightness = brightness;
 }
 
-int ldisplay_showChars(const char chars[4], char offset) {
+int ldisplay_showChars(const char chars[5], char offset) {
   uint32_t buffer[7] = {0};
 
   _overlay(font_std_fixed_ascii[(unsigned)chars[0]], buffer, offset - 21, 0);
   _overlay(font_std_fixed_ascii[(unsigned)chars[1]], buffer, offset - 16, 0);
   _overlay(font_std_fixed_ascii[(unsigned)chars[2]], buffer, offset - 11, 0);
   _overlay(font_std_fixed_ascii[(unsigned)chars[3]], buffer, offset -  6, 0);
-  //_overlay(font_std_fixed_ascii[(unsigned)chars[4]], buffer, offset);
+  _overlay(font_std_fixed_ascii[(unsigned)chars[4]], buffer, offset, 0);
 
   return ldisplay_setDisplay(buffer);
 }
