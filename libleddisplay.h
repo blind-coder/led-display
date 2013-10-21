@@ -60,6 +60,7 @@ int ldisplay_showChars(const char chars[5], char offset);
 void ldisplay_cleanup();
 
 void ldisplay_dumpBuffer(uint32_t data[7]);
+void _overlay(const uint32_t *foreground, uint32_t background[7], int32_t xOff, int32_t yOff);
 
 
 #define CLEAR_BUFFER(b) memset((b), 0, 7*sizeof(uint32_t));

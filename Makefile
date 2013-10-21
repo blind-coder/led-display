@@ -9,7 +9,7 @@ OFILES = $(CFILES:.c=.o)
 CFLAGS = -Wall -fpic
 
 .PHONY: all
-all: libleddisplay displaytest glyph clock
+all: libleddisplay displaytest glyph clock conway_clock
 
 .PHONY: clean
 clean:
@@ -20,6 +20,9 @@ test: displaytest
 
 clock: libleddisplay.o clock.o
 	$(CC) clock.o -L. -lleddisplay -lusb -o clock
+
+conway_clock: libleddisplay.o conway_clock.o
+	$(CC) conway_clock.o -L. -lleddisplay -lusb -o conway_clock
 
 glyph: libleddisplay.o glyph.o
 	$(CC) glyph.o -L. -lleddisplay -lusb -o glyph

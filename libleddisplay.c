@@ -66,7 +66,7 @@ static inline uint32_t _swapbits( uint32_t v )
   return ( ( v & h_mask_4 ) >> 4 ) | ( ( v & l_mask_4 ) << 4 );
 }
 
-static inline void _overlay(const uint32_t *foreground, uint32_t background[7], int32_t xOff, int32_t yOff) {
+void _overlay(const uint32_t *foreground, uint32_t background[7], int32_t xOff, int32_t yOff) {
   int i;
   // index bounds checking
   if (yOff<-6 || yOff>6 || xOff<-20 || xOff>20) return;
