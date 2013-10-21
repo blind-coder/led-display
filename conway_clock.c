@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2006 David Ingram
+ * Copyright (C) 2013 Benjamin Schieder - implementing Conways Game of Life
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -120,6 +121,7 @@ int main(int argc, char *argv[]) {
 		uint32_t j;
 
 		if (oldtime_int != time){
+			/* Every minute, on the minute, set the time to the display */
 			oldtime_int = time;
 			for (i=0; i<7; i++){
 				buffer[i] = B24(00000, 00000000, 00000000);
@@ -131,6 +133,7 @@ int main(int argc, char *argv[]) {
 			_overlay(time_segment_font_digits[(time/1000)%10], buffer, -17, 0);
 		} else
 		if ((buffer[0] | buffer[1] | buffer[2] | buffer[3] | buffer[4] | buffer[5] | buffer[6]) == 0){
+			/* oops, display is empty. Add a lonely glider */
 			buffer[0] = B24(00000, 00000000, 00000000);
 			buffer[1] = B24(00000, 00000000, 00000000);
 			buffer[2] = B24(00000, 00010000, 00000000);
@@ -141,6 +144,8 @@ int main(int argc, char *argv[]) {
 		}
 		ldisplay_setDisplay(buffer);
 		sleep(1);
+
+		/*
 		printf("[H[J");
 		for(i=0; i<7; i++){
 			uint32_t val;
@@ -158,6 +163,8 @@ int main(int argc, char *argv[]) {
 			}
 			printf("\n");
 		}
+		*/
+
 		// Conways game of life
 		bool newmatrix[18][7];
 		for (i = 0; i<7; i++){
@@ -165,6 +172,7 @@ int main(int argc, char *argv[]) {
 				newmatrix[j][i] = matrix[j][i];
 			}
 		}
+
 		for (i = 0; i<7; i++){
 			buffer[i] = B24(00000, 00000000, 00000000);
 			for (j=0; j<18; j++){
@@ -202,6 +210,7 @@ int main(int argc, char *argv[]) {
 						newmatrix[j][i] = false;
 					}
 				}
+				// different ruleset
 				/*
 				if (neighbors % 2 == 0){
 					matrix[i][j] = false;
