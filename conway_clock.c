@@ -101,18 +101,11 @@ int main(int argc, char *argv[]) {
 
 	ldisplay_setBrightness(LDISPLAY_DIM);
 	int oldtime_int=0;
+	time_t oldtime_t=0;
 
-	uint32_t buffer[7] = {
-		B24(00000, 00000000, 00000000),
-		B24(00000, 00000000, 00000000),
-		B24(00000, 00000000, 00000000),
-		B24(00000, 00000000, 00000000),
-		B24(00000, 00000000, 00000000),
-		B24(00000, 00000000, 00000000),
-		B24(00000, 00000000, 00000000)
-	};
+	uint32_t buffer[7] = {0};
 
-	bool matrix[18][7];
+	bool matrix[21][7];
 	while (1) {
 		time_t t = time(NULL);
 		struct tm *curTime = localtime(&t);
@@ -122,6 +115,7 @@ int main(int argc, char *argv[]) {
 
 		if (oldtime_int != time){
 			/* Every minute, on the minute, set the time to the display */
+			oldtime_t = t+1;
 			oldtime_int = time;
 			for (i=0; i<7; i++){
 				buffer[i] = B24(00000, 00000000, 00000000);
@@ -143,7 +137,6 @@ int main(int argc, char *argv[]) {
 			buffer[6] = B24(00000, 00000000, 00000000);
 		}
 		ldisplay_setDisplay(buffer);
-		sleep(1);
 
 		/*
 		printf("[H[J");
@@ -151,7 +144,7 @@ int main(int argc, char *argv[]) {
 			uint32_t val;
 			j=0;
 			val=buffer[i];
-			for(j=0; j<18; val/=2){
+			while (val > 0){
 				if (val & 1){
 					printf("O");
 					matrix[j][i] = true;
@@ -160,31 +153,35 @@ int main(int argc, char *argv[]) {
 					matrix[j][i] = false;
 				}
 				j++;
+				val = val >> 1;
 			}
 			printf("\n");
 		}
 		*/
 
+		usleep(100000);
+		if (oldtime_t < t){
+			oldtime_t = t;
 		// Conways game of life
-		bool newmatrix[18][7];
+		bool newmatrix[21][7];
 		for (i = 0; i<7; i++){
-			for (j=0; j<18; j++){
+			for (j=0; j<21; j++){
 				newmatrix[j][i] = matrix[j][i];
 			}
 		}
 
 		for (i = 0; i<7; i++){
 			buffer[i] = B24(00000, 00000000, 00000000);
-			for (j=0; j<18; j++){
+			for (j=0; j<21; j++){
 				int neighbors = 0;
 				int l, r, t, b;
 				if (i == 0){ t = 6; }
 				else { t = i - 1; }
 				if (i == 6){ b = 0; }
 				else { b = i + 1; }
-				if (j == 0){ l = 17; }
+				if (j == 0){ l = 20; }
 				else { l = j - 1; }
-				if (j == 17){ r = 0; }
+				if (j == 20){ r = 0; }
 				else { r = j + 1; }
 				if (matrix[l][t]) neighbors++;
 				if (matrix[l][i]) neighbors++;
@@ -222,9 +219,10 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		for (i = 0; i<7; i++){
-			for (j=0; j<18; j++){
+			for (j=0; j<21; j++){
 				matrix[j][i] = newmatrix[j][i];
 			}
+		}
 		}
 	}
 
