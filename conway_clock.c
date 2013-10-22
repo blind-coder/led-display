@@ -38,15 +38,17 @@ static void sighandler(int sig) {
 
 static void usage(char *progname) {
 	printf("Usage:\n");
+	printf("  -d                                               Enable debug mode\n");
 	printf("  --help                                           Display this screen.\n");
 	printf("\n");
 	exit(EXIT_SUCCESS);
 }
 
 int main(int argc, char *argv[]) {
-	// parse arguments
+	int debug = 0;
 	int ret;
-	{
+
+	{{{ // parse arguments
 		struct option long_options[] = {
 			{ "help", 0, 0, 0},
 			{ 0, 0, 0, 0 }
@@ -54,7 +56,7 @@ int main(int argc, char *argv[]) {
 
 		while (1) {
 			int opt_index=0;
-			int c = getopt_long(argc, argv, "", long_options, &opt_index);
+			int c = getopt_long(argc, argv, "d", long_options, &opt_index);
 
 			if (c == -1)
 				break;
@@ -65,13 +67,16 @@ int main(int argc, char *argv[]) {
 						usage(argv[0]);
 					}
 					break;
+				case 'd':
+					debug = 1;
+					break;
 				case '?':
 					exit(EXIT_FAILURE);
 				default:
 					printf("??? getopt returned character code 0x%x ???\n", c);
 			}
 		}
-	}
+	}}}
 
 	// no output buffering please
 	setbuf(stdout,0);
@@ -100,12 +105,13 @@ int main(int argc, char *argv[]) {
 	}
 
 	ldisplay_setBrightness(LDISPLAY_DIM);
+
 	int oldtime_int=0;
 	time_t oldtime_t=0;
 
 	uint32_t buffer[7] = {0};
-
 	bool matrix[21][7];
+
 	while (1) {
 		time_t t = time(NULL);
 		struct tm *curTime = localtime(&t);
@@ -138,26 +144,28 @@ int main(int argc, char *argv[]) {
 		}
 		ldisplay_setDisplay(buffer);
 
-		/*
-		printf("[H[J");
-		for(i=0; i<7; i++){
-			uint32_t val;
-			j=0;
-			val=buffer[i];
-			while (val > 0){
-				if (val & 1){
-					printf("O");
-					matrix[j][i] = true;
-				} else {
-					printf(" ");
-					matrix[j][i] = false;
+		if (debug == 1){
+			printf("[H[J");
+			for(i=0; i<7; i++){
+				uint32_t val;
+				char s[22];
+				sprintf(s, "                     ");
+				j=0;
+				val=buffer[i];
+				while (val > 0){
+					if (val & 1){
+						s[21-j] = 'O';
+						matrix[j][i] = true;
+					} else {
+						s[21-j] = ' ';
+						matrix[j][i] = false;
+					}
+					j++;
+					val = val >> 1;
 				}
-				j++;
-				val = val >> 1;
+				printf("%s\n", s);
 			}
-			printf("\n");
 		}
-		*/
 
 		usleep(100000);
 		if (oldtime_t < t){
