@@ -146,23 +146,25 @@ int main(int argc, char *argv[]) {
 
 		if (debug == 1){
 			printf("[H[J");
-			for(i=0; i<7; i++){
-				uint32_t val;
-				char s[22];
-				sprintf(s, "                     ");
-				j=0;
-				val=buffer[i];
-				while (val > 0){
-					if (val & 1){
-						s[21-j] = 'O';
-						matrix[j][i] = true;
-					} else {
-						s[21-j] = ' ';
-						matrix[j][i] = false;
-					}
-					j++;
-					val = val >> 1;
+		}
+		for(i=0; i<7; i++){
+			uint32_t val;
+			char s[22];
+			sprintf(s, "                     ");
+			j=0;
+			val=buffer[i];
+			while (val > 0){
+				if (val & 1){
+					s[21-j] = 'O';
+					matrix[j][i] = true;
+				} else {
+					s[21-j] = ' ';
+					matrix[j][i] = false;
 				}
+				j++;
+				val = val >> 1;
+			}
+			if (debug == 1){
 				printf("%s\n", s);
 			}
 		}
